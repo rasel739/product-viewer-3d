@@ -18,7 +18,7 @@ import SearchQuery from '@/components/sub/SearchQuery';
 export default function Home() {
   const dispatch = useDispatch();
   const { activeIndex, color } = useSelector((state: RootState) => state.product);
-  const { review } = useSelector((state: RootState) => state.review);
+  // const { review } = useSelector((state: RootState) => state.review);
 
   const [loading, setLoading] = useState(true);
 
@@ -35,7 +35,7 @@ export default function Home() {
   }, []);
 
   const product = products[activeIndex];
-  const productReviews = review.filter((r) => r.productId === activeIndex);
+  // const productReviews = review.filter((r) => r.productId === activeIndex);
 
   return (
     <div className='flex flex-col items-center min-h-screen bg-gradient-to-b from-blue-50 to-indigo-100 py-10'>
@@ -72,10 +72,10 @@ export default function Home() {
               title={product.title}
               description={product.description}
               price={product.price}
-              rating={
-                productReviews.reduce((a, r) => a + r.rating, 0) / (productReviews.length || 1)
-              }
-              totalReviews={productReviews.length}
+              // rating={
+              //   productReviews.reduce((a, r) => a + r.rating, 0) / (productReviews.length || 1)
+              // }
+              // totalReviews={productReviews.length}
             />
 
             <div className='mt-4'>
