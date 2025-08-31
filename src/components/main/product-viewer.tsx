@@ -63,7 +63,7 @@ const ProductViewer: React.FC<Props> = ({ modelPath, color, onReady }) => {
             }
           }
         } catch (e) {
-          alert(e);
+          console.log('error is ocard', e);
         }
       }
     });

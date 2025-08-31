@@ -1,7 +1,6 @@
 'use client';
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-// import UserRating from '../common/UserRating';
 
 interface IProductInfo {
   title?: string;
@@ -11,13 +10,7 @@ interface IProductInfo {
   totalReviews?: number;
 }
 
-const ProductInfo: React.FC<IProductInfo> = ({
-  title,
-  description,
-  price,
-  // rating,
-  // totalReviews,
-}) => (
+const ProductInfo: React.FC<IProductInfo> = ({ title, description, price }) => (
   <AnimatePresence mode='wait'>
     <motion.div
       key={title}
@@ -34,8 +27,6 @@ const ProductInfo: React.FC<IProductInfo> = ({
           <h3 className='text-lg font-semibold text-gray-900 dark:text-white mb-2'>
             Customer Reviews
           </h3>
-
-          {/* <UserRating rating={rating} totalReviews={totalReviews} /> */}
         </div>
       </div>
     </motion.div>

@@ -1,4 +1,3 @@
-// /components/ProductNavigation.tsx
 'use client';
 import React from 'react';
 import { CgChevronLeft, CgChevronRight } from 'react-icons/cg';
