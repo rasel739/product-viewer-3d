@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { GLTFLoader, GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
+import { GLTFLoader, GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 const modelCache = new Map<string, THREE.Group>();
 const loader = new GLTFLoader();
@@ -45,7 +45,7 @@ export const getCachedModel = async (modelPath: string): Promise<THREE.Group> =>
         resolve(cloneScene(scene));
       },
       undefined,
-      (err: ErrorEvent) => {
+      (err) => {
         console.error('GLTF load error', err);
         reject(err);
       }
