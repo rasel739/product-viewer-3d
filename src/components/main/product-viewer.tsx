@@ -62,7 +62,9 @@ const ProductViewer: React.FC<Props> = ({ modelPath, color, onReady }) => {
               ((mat as THREE.MeshStandardMaterial).color as THREE.Color).set(color);
             }
           }
-        } catch (e) {}
+        } catch (e) {
+          alert(e);
+        }
       }
     });
   }, [color, model]);
