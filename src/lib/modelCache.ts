@@ -1,38 +1,29 @@
-// /lib/modelCache.ts
 import * as THREE from 'three';
 import { GLTFLoader, GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 
 const modelCache = new Map<string, THREE.Group>();
 const loader = new GLTFLoader();
 
-// Deep clone a scene with proper geometry, material, and skeleton handling
 function cloneScene(scene: THREE.Group): THREE.Group {
   const clone = scene.clone(true) as THREE.Group;
 
-  clone.traverse((node) => {
-    if ((node as THREE.Mesh).isMesh || (node as THREE.SkinnedMesh).isSkinnedMesh) {
-      const mesh = node as THREE.Mesh | THREE.SkinnedMesh;
-
-      // Clone geometry
-      if (mesh.geometry) {
-        mesh.geometry = mesh.geometry.clone();
+  clone.traverse((node: THREE.Object3D) => {
+    if (node instanceof THREE.Mesh || node instanceof THREE.SkinnedMesh) {
+      if (node.geometry) {
+        node.geometry = node.geometry.clone();
       }
 
-      // Clone materials
-      if (Array.isArray(mesh.material)) {
-        mesh.material = mesh.material.map((m) => (m ? m.clone() : m));
-      } else if (mesh.material) {
-        mesh.material = mesh.material.clone();
+      if (Array.isArray(node.material)) {
+        node.material = node.material.map((m) => (m ? m.clone() : m));
+      } else if (node.material) {
+        node.material = node.material.clone();
       }
 
-      // Ensure shadows
-      mesh.castShadow = true;
-      mesh.receiveShadow = true;
+      node.castShadow = true;
+      node.receiveShadow = true;
 
-      // Rebind skeleton if SkinnedMesh
-      if ((mesh as THREE.SkinnedMesh).isSkinnedMesh) {
-        const skinned = mesh as THREE.SkinnedMesh;
-        skinned.bind(skinned.skeleton, skinned.matrixWorld);
+      if (node instanceof THREE.SkinnedMesh) {
+        node.bind(node.skeleton, node.matrixWorld);
       }
     }
   });
@@ -54,7 +45,7 @@ export const getCachedModel = async (modelPath: string): Promise<THREE.Group> =>
         resolve(cloneScene(scene));
       },
       undefined,
-      (err) => {
+      (err: ErrorEvent) => {
         console.error('GLTF load error', err);
         reject(err);
       }
