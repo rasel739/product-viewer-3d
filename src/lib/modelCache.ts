@@ -1,6 +1,6 @@
 // /lib/modelCache.ts
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { GLTFLoader, GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 
 const modelCache = new Map<string, THREE.Group>();
 const loader = new GLTFLoader();
@@ -9,27 +9,30 @@ const loader = new GLTFLoader();
 function cloneScene(scene: THREE.Group): THREE.Group {
   const clone = scene.clone(true) as THREE.Group;
 
-  clone.traverse((node: any) => {
-    if (node.isMesh || node.isSkinnedMesh) {
-      // ✅ clone geometry
-      if (node.geometry) {
-        node.geometry = node.geometry.clone();
+  clone.traverse((node) => {
+    if ((node as THREE.Mesh).isMesh || (node as THREE.SkinnedMesh).isSkinnedMesh) {
+      const mesh = node as THREE.Mesh | THREE.SkinnedMesh;
+
+      // Clone geometry
+      if (mesh.geometry) {
+        mesh.geometry = mesh.geometry.clone();
       }
 
-      // ✅ clone materials
-      if (Array.isArray(node.material)) {
-        node.material = node.material.map((m: any) => (m ? m.clone() : m));
-      } else if (node.material) {
-        node.material = node.material.clone();
+      // Clone materials
+      if (Array.isArray(mesh.material)) {
+        mesh.material = mesh.material.map((m) => (m ? m.clone() : m));
+      } else if (mesh.material) {
+        mesh.material = mesh.material.clone();
       }
 
-      // ✅ ensure shadows are preserved
-      node.castShadow = true;
-      node.receiveShadow = true;
+      // Ensure shadows
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
 
-      // ✅ fix for SkinnedMesh (rebind skeleton)
-      if (node.isSkinnedMesh) {
-        node.bind(node.skeleton, node.matrixWorld);
+      // Rebind skeleton if SkinnedMesh
+      if ((mesh as THREE.SkinnedMesh).isSkinnedMesh) {
+        const skinned = mesh as THREE.SkinnedMesh;
+        skinned.bind(skinned.skeleton, skinned.matrixWorld);
       }
     }
   });
@@ -39,16 +42,14 @@ function cloneScene(scene: THREE.Group): THREE.Group {
 
 export const getCachedModel = async (modelPath: string): Promise<THREE.Group> => {
   if (modelCache.has(modelPath)) {
-    // Return a safe clone every time
     return cloneScene(modelCache.get(modelPath)!);
   }
 
   return new Promise((resolve, reject) => {
     loader.load(
       modelPath,
-      (gltf) => {
+      (gltf: GLTF) => {
         const scene = gltf.scene;
-        // Cache original for reuse
         modelCache.set(modelPath, scene);
         resolve(cloneScene(scene));
       },
